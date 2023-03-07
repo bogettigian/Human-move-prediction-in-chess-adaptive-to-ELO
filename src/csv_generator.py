@@ -42,21 +42,24 @@ if __name__ == "__main__":
         'threefold',
         'move_number',
         'elo',
-        'time',
+        'game_time',
         'increase',
         'time_left',
         'from_square',
         'to_square',
-        'valuation']
+        'checkmate',
+        'valuation',
+        'delta_valuation']
 
     filter = {}
-    result = collection.find(filter)
+    result = collection.find(filter).limit(100)
 
     data = []
     for game_dict in result:
         game = utils.dict_to_game(game_dict)
         board_game = game.board()
         total_records += 1
+        prev_val = 0
 
         for node in game.mainline():
             row = utils.get_pieces_array(board_game.piece_map())
@@ -73,27 +76,41 @@ if __name__ == "__main__":
             row.append(board_game.fullmove_number)
 
             row.append(game.headers['WhiteElo'] if board_game.turn else game.headers['BlackElo'])
-            time, increase = game.headers['TimeControl'].split('+')
-            row.append(time)
+            game_time, increase = game.headers['TimeControl'].split('+')
+            row.append(game_time)
             row.append(increase)
             row.append(node.clock() if node.clock() is not None else node.emt())
             row.append(node.move.from_square)
             row.append(node.move.to_square)
 
             board_game.push(node.move)
-            if board_game.is_checkmate():
-                row.append(1000)
-            elif node.eval() is not None:
-                if node.eval().pov(board_game.turn).is_mate() and node.eval().pov(board_game.turn).mate() > 0:
-                    row.append(1000)
-                elif node.eval().pov(board_game.turn).is_mate() and node.eval().pov(board_game.turn).mate() < 0:
-                    row.append(-1000)
+            if board_game.is_checkmate() and not board_game.turn:
+                row.append(0)
+                if not board_game.turn:
+                    val = utils.CHECKMATE_VAL
                 else:
-                    row.append(node.eval().pov(board_game.turn).score())
+                    val = - utils.CHECKMATE_VAL
+            elif node.eval() is not None:
+                if node.eval().pov(not board_game.turn).is_mate():
+                    row.append(abs(node.eval().pov(not board_game.turn).mate()))
+                    if not board_game.turn:
+                        val = utils.CHECKMATE_VAL
+                    else:
+                        val = - utils.CHECKMATE_VAL
+                else:
+                    row.append(-1)
+                    val = node.eval().pov(not board_game.turn).score()
             else:
                 # The following movements are not analyzed.
                 break
 
+            row.append(val)
+            if not board_game.turn:
+                row.append(val - prev_val)
+            else:
+                row.append((val - prev_val) * -1)
+
+            prev_val = val
             saved_records += 1
             data.append(row)
 

@@ -1,6 +1,9 @@
 import chess.pgn
 
 
+CHECKMATE_VAL = 999999
+
+
 def valid_game(game: chess.pgn.Game):
     if game.headers.get('BlackElo') is None:
         return False
