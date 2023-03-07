@@ -47,7 +47,7 @@ if __name__ == "__main__":
         'time_left',
         'from_square',
         'to_square',
-        'checkmate',
+        'checkmate_count',
         'valuation',
         'delta_valuation']
 
