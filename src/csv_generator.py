@@ -1,6 +1,7 @@
 import argparse
 import os
 import time
+import chess
 import pandas as pd
 
 import database
@@ -30,42 +31,121 @@ if __name__ == "__main__":
     total_records = 0
     saved_records = 0
 
-    # columns = ['board', 'color', 'elo', 'time', 'time_left', 'castling', 'en_passant',
-    # 'from_square', 'to_square', 'valuation']
-    columns = ['board', 'elo', 'time', 'time_left', 'from_square', 'to_square', 'valuation']
-    data = []
+    columns = [
+        'R1',
+        'R2',
+        'Rp1',
+        'Rp2',
+        'N1',
+        'N2',
+        'Np1',
+        'Np2',
+        'B1',
+        'B2',
+        'Bp1',
+        'Bp2',
+        'Q',
+        'Qp1',
+        'Qp2',
+        'Qp3',
+        'Qp4',
+        'K',
+        'P1',
+        'P2',
+        'P3',
+        'P4',
+        'P5',
+        'P6',
+        'P7',
+        'P8',
+        'r1',
+        'r2',
+        'rp1',
+        'rp2',
+        'n1',
+        'n2',
+        'np1',
+        'np2',
+        'b1',
+        'b2',
+        'bp1',
+        'bp2',
+        'q',
+        'qp1',
+        'qp2',
+        'qp3',
+        'qp4',
+        'k',
+        'p1',
+        'p2',
+        'p3',
+        'p4',
+        'p5',
+        'p6',
+        'p7',
+        'p8',
+        'active_color',
+        'castling_K',
+        'castling_Q',
+        'castling_k',
+        'castling_q',
+        'en_passant',
+        'half-move_clock',
+        'threefold',
+        'move_number',
+        'elo',
+        'time',
+        'increase',
+        'time_left',
+        'from_square',
+        'to_square',
+        'valuation']
 
     filter = {}
     result = collection.find(filter)
+
+    data = []
     for game_dict in result:
         game = utils.dict_to_game(game_dict)
         board_game = game.board()
-        is_white_turn = True
         total_records += 1
 
         for node in game.mainline():
-            row = []
+            row = utils.get_pieces_array(board_game.piece_map())
 
-            row.append(board_game.fen())
-            # row.append('White' if is_white_turn else 'Black')
-            row.append(game.headers['WhiteElo'] if is_white_turn else game.headers['BlackElo'])
-            row.append(game.headers['TimeControl'])
+            row.append(int(board_game.turn))
+            row.append(int(board_game.has_kingside_castling_rights(chess.WHITE)))
+            row.append(int(board_game.has_queenside_castling_rights(chess.WHITE)))
+            row.append(int(board_game.has_kingside_castling_rights(chess.BLACK)))
+            row.append(int(board_game.has_kingside_castling_rights(chess.BLACK)))
+            row.append(0 if not board_game.has_legal_en_passant() else
+                       chess.parse_square((board_game.fen().split()[3])))
+            row.append(board_game.halfmove_clock)
+            row.append(int(board_game.can_claim_threefold_repetition()))
+            row.append(board_game.fullmove_number)
+
+            row.append(game.headers['WhiteElo'] if board_game.turn else game.headers['BlackElo'])
+            time, increase = game.headers['TimeControl'].split('+')
+            row.append(time)
+            row.append(increase)
             row.append(node.clock() if node.clock() is not None else node.emt())
-            # row.append(board_game.has_castling_rights(is_white_turn))
-            # row.append(board_game.has_legal_en_passant())
             row.append(node.move.from_square)
             row.append(node.move.to_square)
 
             board_game.push(node.move)
             if board_game.is_checkmate():
-                row.append('+1000')
+                row.append(1000)
             elif node.eval() is not None:
-                row.append(node.eval().pov(is_white_turn))
+                if node.eval().pov(board_game.turn).is_mate() and node.eval().pov(board_game.turn).mate() > 0:
+                    row.append(1000)
+                elif node.eval().pov(board_game.turn).is_mate() and node.eval().pov(board_game.turn).mate() < 0:
+                    row.append(-1000)
+                else:
+                    row.append(node.eval().pov(board_game.turn).score())
             else:
                 # The following movements are not analyzed.
                 break
 
-            is_white_turn = not is_white_turn
             saved_records += 1
             data.append(row)
 
