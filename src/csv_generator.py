@@ -31,38 +31,43 @@ if __name__ == "__main__":
     total_records = 0
     saved_records = 0
 
-    columns = list(range(1, 65)) + [
-        'active_color',
-        'castling_K',
-        'castling_Q',
-        'castling_k',
-        'castling_q',
-        'en_passant',
-        'half-move_clock',
-        'threefold',
-        'move_number',
-        'elo',
-        'game_time',
-        'increase',
-        'time_left',
-        'from_square',
-        'to_square',
-        'checkmate_count',
-        'valuation',
-        'delta_valuation']
+    columns = list(range(1, 65)) + utils.generate_columns('_1b') + utils.generate_columns(
+        '_2b') + utils.generate_columns('_3b') + [
+                  'active_color',
+                  'castling_K',
+                  'castling_Q',
+                  'castling_k',
+                  'castling_q',
+                  'en_passant',
+                  'half-move_clock',
+                  'threefold',
+                  'move_number',
+                  'elo',
+                  'game_time',
+                  'increase',
+                  'time_left',
+                  'from_square',
+                  'to_square',
+                  'checkmate_count',
+                  'valuation',
+                  'delta_valuation']
 
     filter = {}
-    result = collection.find(filter).limit(100)
+    result = collection.find(filter)
 
     data = []
     for game_dict in result:
         game = utils.dict_to_game(game_dict)
         board_game = game.board()
         total_records += 1
+        move_3b = [0] * 69
+        move_2b = [0] * 69
+        move_1b = [0] * 69
         prev_val = 0
 
         for node in game.mainline():
             row = utils.get_pieces_array(board_game.piece_map())
+            row = row + move_1b + move_2b + move_3b
 
             row.append(int(board_game.turn))
             row.append(int(board_game.has_kingside_castling_rights(chess.WHITE)))
@@ -110,6 +115,9 @@ if __name__ == "__main__":
             else:
                 row.append((val - prev_val) * -1)
 
+            move_1b = row[:64] + row[-5:]
+            move_2b = move_1b
+            move_3b = move_2b
             prev_val = val
             saved_records += 1
             data.append(row)

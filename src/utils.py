@@ -82,3 +82,18 @@ def get_pieces_array(piece_map: dict):
                 board[key] = chess.PAWN
 
     return board
+
+
+def generate_columns(prefix: str):
+    col_names = []
+
+    for i in range(1, 65):
+        col_names.append(str(i) + prefix)
+
+    col_names.append('from_square' + prefix)
+    col_names.append('to_square' + prefix)
+    col_names.append('checkmate_count' + prefix)
+    col_names.append('valuation' + prefix)
+    col_names.append('delta_valuation' + prefix)
+
+    return col_names
