@@ -12,7 +12,7 @@ def valid_game(game: chess.pgn.Game):
     for node in game.mainline():
         if node.eval() is None:
             return False
-        if node.clock() is None and node.emt() is None:
+        if node.clock() is None:
             return False
         return True
     return False
@@ -152,7 +152,7 @@ def game_dict_to_array(game_dict: dict):
         game_time, increase = game.headers['TimeControl'].split('+')
         row.append(game_time)
         row.append(increase)
-        row.append(int(node.clock()) if node.clock() is not None else int(node.emt()))
+        row.append(node.clock())
         row.append(node.move.from_square)
         row.append(node.move.to_square)
 
