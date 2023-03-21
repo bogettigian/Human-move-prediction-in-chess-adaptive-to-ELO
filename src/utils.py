@@ -116,6 +116,7 @@ def columns():
         'time_left',
         'from_square',
         'to_square',
+        'promotion',
         'checkmate_count',
         'valuation',
         'delta_valuation']]
@@ -128,9 +129,9 @@ def game_dict_to_array(game_dict: dict):
     game = dict_to_game(game_dict)
     board_game = game.board()
 
-    move_3b = [0] * 69
-    move_2b = [0] * 69
-    move_1b = [0] * 69
+    move_3b = [0] * 70
+    move_2b = [0] * 70
+    move_1b = [0] * 70
     prev_val = 0
 
     for node in game.mainline():
@@ -155,6 +156,7 @@ def game_dict_to_array(game_dict: dict):
         row.append(node.clock())
         row.append(node.move.from_square)
         row.append(node.move.to_square)
+        row.append(0 if node.move.promotion is None else node.move.promotion)
 
         board_game.push(node.move)
         if board_game.is_checkmate() and not board_game.turn:
@@ -183,7 +185,7 @@ def game_dict_to_array(game_dict: dict):
         else:
             row.append((val - prev_val) * -1)
 
-        move_1b = row[:64] + row[-5:]
+        move_1b = row[:64] + row[-6:]
         move_2b = move_1b
         move_3b = move_2b
         prev_val = val
