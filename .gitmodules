@@ -1,0 +1,6 @@
+[submodule "trainingdata-tool"]
+	path = trainingdata-tool
+	url = https://github.com/bogettigian/trainingdata-tool
+[submodule "lczero-training"]
+	path = lczero-training
+	url = https://github.com/bogettigian/lczero-training
