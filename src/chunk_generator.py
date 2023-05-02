@@ -8,8 +8,7 @@ import utils
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Chess Chunk generator script.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-c', '--connection_string',
-                        default='mongodb://localhost:27017', help="Connection string")
+    parser.add_argument('-c', '--connection_string', default='mongodb://localhost:27017', help="Connection string")
     parser.add_argument('-d', '--database', default='chess_base', help="Database name")
     parser.add_argument('-t', '--collection', default='moves', help="Collection name")
     parser.add_argument('-p', '--path', default='./../data/csv/data.pgn', help="Data output")
@@ -23,14 +22,13 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
 
-    collection = database.get_database(connection_string, database_name, collection_name)
-    filter = {}
-
     start_time = time.time()
     saved_records = 0
+    filter = {}
 
     if not os.path.exists(path):
-        for game_dict in collection.find(filter).limit(1000):
+        collection = database.get_database(connection_string, database_name, collection_name)
+        for game_dict in collection.find(filter):
             game = utils.dict_to_game(game_dict)
             saved_records += 1
 
