@@ -6,7 +6,7 @@ import database
 import utils
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Chess PGN generator script.",
+    parser = argparse.ArgumentParser(description="Chess Chunk generator script.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-c', '--connection_string',
                         default='mongodb://localhost:27017', help="Connection string")
@@ -29,12 +29,17 @@ if __name__ == "__main__":
     start_time = time.time()
     saved_records = 0
 
-    for game_dict in collection.find(filter):
-        game = utils.dict_to_game(game_dict)
-        saved_records += 1
+    if not os.path.exists(path):
+        for game_dict in collection.find(filter).limit(1000):
+            game = utils.dict_to_game(game_dict)
+            saved_records += 1
 
-        with open(path, "a") as f:
-            f.write(game.__str__() + '\n\n')
+            with open(path, "a") as f:
+                f.write(game.__str__() + '\n\n')
+        print(f'Total games saved: {saved_records}')
 
-    print(f'Total games saved: {saved_records}')
+    result = os.system(f'bash ./../libs/trainingdata-tool/trainingdata-tool -v -files-per-dir 5000 {path}')
+    if result != 0:
+        print('Error: trainingdata-tool call failed')
+
     print(f'Time taken in seconds: {time.time() - start_time}')
