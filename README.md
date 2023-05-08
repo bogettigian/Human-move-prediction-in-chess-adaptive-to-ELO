@@ -1,5 +1,36 @@
 # Aligning Superhuman AI with Human Behavior
 
+## How to build
+
+After cloning the repository locally, don't forget to run the following commands in order to also clone the git submodules:
+```
+git submodule sync --recursive
+git submodule update --recursive --init
+```
+
+It is necessary to install mongodb, to do so follow the steps of the official documentation \
+https://www.mongodb.com/docs/manual/installation/
+
+In order to build the tool, trainingdata-tool, on Ubuntu, run the following command:
+```
+cd libs/trainingdata-tool/
+sudo apt-get install -y cmake libboost-all-dev
+cmake .
+cmake --build .
+sudo chmod +x trainingdata-tool
+cd ../../
+```
+
+## How to run
+```
+cd src/
+python ingestion.py
+python chunk_generator.py
+
+```
+
+## References
+
 ### Paper:
 https://arxiv.org/pdf/2006.01855.pdf
 
