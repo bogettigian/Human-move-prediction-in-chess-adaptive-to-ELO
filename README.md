@@ -14,19 +14,29 @@ https://www.mongodb.com/docs/manual/installation/
 In order to build the tool, trainingdata-tool, on Ubuntu, run the following command:
 ```
 cd libs/trainingdata-tool/
-sudo apt-get install -y cmake libboost-all-dev
+sudo apt-get install -y build-essential cmake libboost-all-dev
 cmake .
 cmake --build .
 sudo chmod +x trainingdata-tool
 cd ../../
 ```
 
-## How to run
+## How to generate input files
 ```
 cd src/
+pip install -r ./../requirements.txt
 python ingestion.py
 python chunk_generator.py
+cd ../
+```
 
+## How to train model
+```
+cd ../libs/lczero-training/
+sudo apt-get install protobuf-compiler
+bash init.sh
+cd tf/
+python ./train.py --cfg configs/example.yaml --output /tmp/mymodel.txt
 ```
 
 ## References

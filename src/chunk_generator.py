@@ -36,7 +36,13 @@ if __name__ == "__main__":
                 f.write(game.__str__() + '\n\n')
         print(f'Total games saved: {saved_records}')
 
-    result = os.system(f'bash ./../libs/trainingdata-tool/trainingdata-tool -v -files-per-dir 5000 {path}')
+    if not os.path.exists(os.path.dirname('./../data/chunk/')):
+        os.makedirs(os.path.dirname('./../data/chunk/'))
+
+    os.chdir('./../data/chunk/')
+    result = os.system(
+        f'./../../src/../libs/trainingdata-tool/trainingdata-tool -v -files-per-dir 5000 ./../../src/{path}')
+
     if result != 0:
         print('Error: trainingdata-tool call failed')
 
