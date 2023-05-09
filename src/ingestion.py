@@ -21,12 +21,11 @@ if __name__ == "__main__":
     collection_name = args['collection']
     path = args['path']
 
-    collection = database.get_database(connection_string, database_name, collection_name)
-
     start_time = time.time()
     total_records = 0
     saved_records = 0
 
+    collection = database.get_database(connection_string, database_name, collection_name)
     for file in os.listdir(path):
         if not file.endswith('.pgn'):
             continue
