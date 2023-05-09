@@ -1,6 +1,6 @@
 # Aligning Superhuman AI with Human Behavior
 
-## How to build
+## How to start
 
 After cloning the repository locally, don't forget to run the following commands in order to also clone the git submodules:
 ```
@@ -11,13 +11,24 @@ git submodule update --recursive --init
 It is necessary to install mongodb, to do so follow the steps of the official documentation \
 https://www.mongodb.com/docs/manual/installation/
 
-In order to build the tool, trainingdata-tool, on Ubuntu, run the following command:
+## How to build libraries
+
+In order to build trainingdata-tool, on Ubuntu, run the following command:
 ```
 cd libs/trainingdata-tool/
 sudo apt-get install -y build-essential cmake libboost-all-dev
 cmake .
 cmake --build .
-sudo chmod +x trainingdata-tool
+# (sudo chmod +x trainingdata-tool)
+cd ../../
+```
+
+In order to build lczero-training, on Ubuntu, run the following command:
+```
+cd libs/lczero-training/
+sudo apt-get install protobuf-compiler
+# (sudo chmod +x init.sh)
+bash init.sh
 cd ../../
 ```
 
@@ -26,16 +37,14 @@ cd ../../
 cd src/
 pip install -r ./../requirements.txt
 python ingestion.py
+python pgn_generator.py
 python chunk_generator.py
 cd ../
 ```
 
 ## How to train model
 ```
-cd ../libs/lczero-training/
-sudo apt-get install protobuf-compiler
-bash init.sh
-cd tf/
+cd ../libs/lczero-training/tf/
 python ./train.py --cfg configs/example.yaml --output /tmp/mymodel.txt
 ```
 
