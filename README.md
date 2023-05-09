@@ -45,7 +45,9 @@ cd ../
 ## How to train model
 ```
 cd libs/lczero-training/tf/
-python ./train.py --cfg configs/example.yaml --output /tmp/mymodel.txt
+mkdir ./../../../data/network
+mkdir ./../../../data/model
+python ./train.py --cfg configs/example.yaml --output ./../../../data/model/mymodel.txt
 ```
 
 ## References
