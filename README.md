@@ -15,8 +15,16 @@ https://www.mongodb.com/docs/manual/installation/
 
 In order to build trainingdata-tool, on Ubuntu, run the following command:
 ```
-cd libs/trainingdata-tool/
 sudo apt-get install -y build-essential cmake libboost-all-dev
+```
+For Windows, follow the instructions:
+- Download MinGW from https://winlibs.com/#download-release and add it to environment variables
+- Download libboost from https://www.boost.org/users/download/ and move it to MinGW/include/boost folder
+- You probably have to comment out line 76 of the libs/trainingdata-tool/polyglot/src/getopt.h
+
+Then run the following commands
+```
+cd libs/trainingdata-tool/
 cmake .
 cmake --build .
 sudo chmod +x trainingdata-tool
@@ -25,9 +33,14 @@ cd ../../
 
 In order to build lczero-training, on Ubuntu, run the following command:
 ```
-cd libs/lczero-training/
 sudo apt-get install -y protobuf-compiler
-# (sudo chmod +x init.sh)
+```
+For Windows, follow the instructions:
+- Download protoc from https://github.com/protocolbuffers/protobuf/releases and add it to environment variables
+
+Then run the following commands
+```
+cd libs/lczero-training/
 bash init.sh
 cd ../../
 ```
