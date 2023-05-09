@@ -19,14 +19,14 @@ cd libs/trainingdata-tool/
 sudo apt-get install -y build-essential cmake libboost-all-dev
 cmake .
 cmake --build .
-# (sudo chmod +x trainingdata-tool)
+sudo chmod +x trainingdata-tool
 cd ../../
 ```
 
 In order to build lczero-training, on Ubuntu, run the following command:
 ```
 cd libs/lczero-training/
-sudo apt-get install protobuf-compiler
+sudo apt-get install -y protobuf-compiler
 # (sudo chmod +x init.sh)
 bash init.sh
 cd ../../
@@ -44,7 +44,7 @@ cd ../
 
 ## How to train model
 ```
-cd ../libs/lczero-training/tf/
+cd libs/lczero-training/tf/
 python ./train.py --cfg configs/example.yaml --output /tmp/mymodel.txt
 ```
 
