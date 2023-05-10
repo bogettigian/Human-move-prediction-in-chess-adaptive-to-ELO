@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 import time
 
 if __name__ == "__main__":
@@ -28,9 +29,8 @@ if __name__ == "__main__":
 
     work_dir = os.getcwd()
     os.chdir(chunk_train_path)
-    training_data_tool_dir = './../../../src/../libs/trainingdata-tool/trainingdata-tool'
 
-    result = os.system(f'{training_data_tool_dir} -v -files-per-dir 5000 ./../../../src/{pgn_path}')
+    result = os.system(f'trainingdata-tool -v -files-per-dir 5000 ./../../../src/{pgn_path}')
     if result != 0:
         raise Exception('Error: trainingdata-tool call failed')
 

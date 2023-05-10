@@ -30,6 +30,7 @@ cmake --build .
 sudo chmod +x trainingdata-tool
 cd ../../
 ```
+and add trainingdata-tool to the path.
 
 In order to build lczero-training, on Ubuntu, run the following command:
 ```
