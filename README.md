@@ -13,6 +13,7 @@ https://www.mongodb.com/docs/manual/installation/
 
 ## How to build libraries
 
+### trainingdata-tool
 In order to build trainingdata-tool, on Ubuntu, run the following command:
 ```
 sudo apt-get install -y build-essential cmake libboost-all-dev
@@ -32,6 +33,7 @@ cd ../../
 ```
 and add trainingdata-tool to the path.
 
+### lczero-training
 In order to build lczero-training, on Ubuntu, run the following command:
 ```
 sudo apt-get install -y protobuf-compiler
@@ -45,6 +47,10 @@ cd libs/lczero-training/
 bash init.sh
 cd ../../
 ```
+
+### CUDA Toolkit
+The project is designed to work with GPU, for that it is required to install CUDA Toolkit, and to do so follow the instructions in this page:
+https://developer.nvidia.com/cuda-toolkit
 
 ## How to generate input files
 ```
