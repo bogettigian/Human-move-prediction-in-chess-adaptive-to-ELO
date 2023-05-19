@@ -69,7 +69,7 @@ cd ../
 cd libs/lczero-training/tf/
 mkdir ./../../../data/network
 mkdir ./../../../data/model
-python ./train.py --cfg configs/example.yaml --output ./../../../data/model/mymodel.txt
+python ./train.py --cfg configs/example.yaml --output ./../../../data/model/mymodel.pb.gz
 ```
 
 ## References
