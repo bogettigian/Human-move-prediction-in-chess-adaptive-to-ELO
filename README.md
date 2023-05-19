@@ -49,8 +49,10 @@ cd ../../
 ```
 
 ### CUDA Toolkit
-The project is designed to work with GPU, for that it is required to install CUDA Toolkit, and to do so follow the instructions in this page:
-https://developer.nvidia.com/cuda-toolkit
+The project is designed to work with GPU, for that it is required to install CUDA Toolkit, and to do so follow the instructions in these pages: \
+https://developer.nvidia.com/cuda-toolkit \
+https://developer.nvidia.com/cudnn \
+https://www.tensorflow.org/install/source
 
 ## How to generate input files
 ```
