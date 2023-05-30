@@ -6,6 +6,8 @@ After cloning the repository locally, don't forget to run the following commands
 ```
 git submodule sync --recursive
 git submodule update --recursive --init
+
+pip install -r requirements.txt
 ```
 
 ### MongoDB
@@ -60,17 +62,18 @@ In order to build lc0, on Ubuntu, run the following command:
 ```
 cd libs/trainingdata-tool/lc0/
 sh build.sh
+cd ../../../
 ```
 For Windows, follow the instructions from cmd:
 ```
 cd libs/trainingdata-tool/lc0/
 build-cuda.cmd
+cd ../../../
 ```
 
 ## How to generate input files
 ```
 cd src/
-pip install -r ./../requirements.txt
 python ingestion.py
 python pgn_generator.py
 python chunk_generator.py
