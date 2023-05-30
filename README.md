@@ -8,8 +8,16 @@ git submodule sync --recursive
 git submodule update --recursive --init
 ```
 
+### MongoDB
+
 It is necessary to install mongodb, to do so follow the steps of the official documentation \
 https://www.mongodb.com/docs/manual/installation/
+
+### CUDA Toolkit
+The project is designed to work with GPU, for that it is required to install CUDA Toolkit, and to do so follow the instructions in these pages: \
+https://developer.nvidia.com/cuda-toolkit \
+https://developer.nvidia.com/cudnn \
+https://www.tensorflow.org/install/source
 
 ## How to build libraries
 
@@ -19,8 +27,7 @@ In order to build trainingdata-tool, on Ubuntu, run the following command:
 sudo apt-get install -y build-essential cmake libboost-all-dev
 ```
 For Windows, follow the instructions:
-- Download MinGW from https://winlibs.com/#download-release and add it to environment variables
-- Download libboost from https://www.boost.org/users/download/ and move it to MinGW/include/boost folder
+- Download libboost from https://www.boost.org/users/download/ 
 - You probably have to comment out line 76 of the libs/trainingdata-tool/polyglot/src/getopt.h
 
 Then run the following commands
@@ -48,11 +55,17 @@ bash init.sh
 cd ../../
 ```
 
-### CUDA Toolkit
-The project is designed to work with GPU, for that it is required to install CUDA Toolkit, and to do so follow the instructions in these pages: \
-https://developer.nvidia.com/cuda-toolkit \
-https://developer.nvidia.com/cudnn \
-https://www.tensorflow.org/install/source
+### lc0
+In order to build lc0, on Ubuntu, run the following command:
+```
+cd libs/trainingdata-tool/lc0/
+sh build.sh
+```
+For Windows, follow the instructions from cmd:
+```
+cd libs/trainingdata-tool/lc0/
+build-cuda.cmd
+```
 
 ## How to generate input files
 ```
@@ -70,6 +83,12 @@ cd libs/lczero-training/tf/
 mkdir ./../../../data/network
 mkdir ./../../../data/model
 python ./train.py --cfg configs/example.yaml --output ./../../../data/model/mymodel.pb.gz
+cd ./../../../
+```
+
+## How to Run model
+```
+./libs/trainingdata-tool/lc0/build/lc0 --weights=./data/model/mymodel.pb.gz
 ```
 
 ## References
