@@ -9,7 +9,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Chess PGN generator script.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-c', '--connection_string', default='mongodb://localhost:27017', help="Connection string")
-    parser.add_argument('-d', '--database', default='chess_base', help="Database name")
+    parser.add_argument('-d', '--database', default='chess-mongo', help="Database name")
     parser.add_argument('-t', '--collection', default='moves', help="Collection name")
     parser.add_argument('-p', '--path', default='./../data/pgn/data.pgn', help="Data output")
     args = vars(parser.parse_args())
