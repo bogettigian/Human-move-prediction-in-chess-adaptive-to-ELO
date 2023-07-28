@@ -21,6 +21,8 @@ if __name__ == "__main__":
     collection_name = args['collection']
     path = args['path']
 
+    print('Starting ingestion...')
+
     start_time = time.time()
     total_records = 0
     saved_records = 0
@@ -30,6 +32,7 @@ if __name__ == "__main__":
         if not file.endswith('.pgn'):
             continue
 
+        print(f'Using file: {file}')
         pgn = open(path + file)
 
         game = chess.pgn.read_game(pgn)
