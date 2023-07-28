@@ -13,7 +13,7 @@ if __name__ == "__main__":
                         default='mongodb://localhost:27017', help="Connection string")
     parser.add_argument('-d', '--database', default='chess-mongo', help="Database name")
     parser.add_argument('-t', '--collection', default='moves', help="Collection name")
-    parser.add_argument('-p', '--path', default='./../data/', help="Data source")
+    parser.add_argument('-p', '--path', default='./../data/pgn_raw/', help="Data source")
     args = vars(parser.parse_args())
 
     connection_string = args['connection_string']
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         game = chess.pgn.read_game(pgn)
         while game is not None:
             total_records += 1
-            if total_records % 10000:
+            if total_records % 10000 == 0:
                 print(f'Games read: {total_records}')
             if utils.valid_game(game):
                 game_parsed = utils.game_to_dict(game)
