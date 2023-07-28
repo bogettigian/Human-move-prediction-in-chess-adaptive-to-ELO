@@ -38,6 +38,8 @@ if __name__ == "__main__":
         game = chess.pgn.read_game(pgn)
         while game is not None:
             total_records += 1
+            if total_records % 10000:
+                print(f'Games read: {total_records}')
             if utils.valid_game(game):
                 game_parsed = utils.game_to_dict(game)
                 collection.insert_one(game_parsed)
