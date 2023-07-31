@@ -14,7 +14,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--collection', default='moves', help="Collection name")
     parser.add_argument('-p', '--path', default='./../data/pgn/data.pgn', help="Data output")
 
-    parser.add_argument('-f', '--filter', default={}, type=json.loads, help="Database query filter")
+    parser.add_argument('-f', '--filter', default="{}", type=json.loads, help="Database query filter")
     parser.add_argument('-s', '--skip', default=0, type=int, help="Database query skip")
     parser.add_argument('-l', '--limit', default=0, type=int, help="Database query limit")
     args = vars(parser.parse_args())
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     saved_records = 0
 
     collection = database.get_database(connection_string, database_name, collection_name)
-    for game_dict in collection.find(db_filter).sort({'$natural': 1}).skip(db_skip).limit(db_limit):
+    for game_dict in collection.find(db_filter).sort('$natural', 1).skip(db_skip).limit(db_limit):
         game = utils.dict_to_game(game_dict)
         saved_records += 1
         if saved_records % 10000 == 0:
