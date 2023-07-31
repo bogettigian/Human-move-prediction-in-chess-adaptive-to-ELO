@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import time
 import numpy as np
@@ -13,12 +14,20 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--database', default='chess-mongo', help="Database name")
     parser.add_argument('-t', '--collection', default='moves', help="Collection name")
     parser.add_argument('-p', '--path', default='./../data/csv/data.csv', help="Data output")
+
+    parser.add_argument('-f', '--filter', default={}, type=json.loads, help="Database query filter")
+    parser.add_argument('-s', '--skip', default=0, type=int, help="Database query skip")
+    parser.add_argument('-l', '--limit', default=0, type=int, help="Database query limit")
     args = vars(parser.parse_args())
 
     connection_string = args['connection_string']
     database_name = args['database']
     collection_name = args['collection']
     path = args['path']
+
+    db_filter = args['filter']
+    db_skip = args['skip']
+    db_limit = args['limit']
 
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
@@ -32,7 +41,7 @@ if __name__ == "__main__":
     with open(path, 'w') as f:
         np.savetxt(f, utils.columns(), delimiter=',', fmt='%s')
 
-    for game_dict in collection.find(filter):
+    for game_dict in collection.find(db_filter).sort({'$natural': 1}).skip(db_skip).limit(db_limit):
         data, records = utils.game_dict_to_array(game_dict)
         total_records += 1
         saved_records += records
