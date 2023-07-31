@@ -38,6 +38,8 @@ if __name__ == "__main__":
     for game_dict in collection.find(db_filter).sort({'$natural': 1}).skip(db_skip).limit(db_limit):
         game = utils.dict_to_game(game_dict)
         saved_records += 1
+        if saved_records % 10000 == 0:
+            print(f'Games read: {saved_records}')
 
         with open(path, "a") as f:
             f.write(game.__str__() + '\n\n')

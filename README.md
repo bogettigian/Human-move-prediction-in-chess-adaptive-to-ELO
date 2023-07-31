@@ -74,7 +74,7 @@ cd ../../../
 ## How to generate input files
 ```
 cd src/
-python ingestion.py
+python pgn_ingestion.py
 python pgn_generator.py
 python chunk_generator.py
 cd ../

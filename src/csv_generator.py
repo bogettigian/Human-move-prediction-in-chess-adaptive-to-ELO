@@ -45,6 +45,8 @@ if __name__ == "__main__":
         data, records = utils.game_dict_to_array(game_dict)
         total_records += 1
         saved_records += records
+        if total_records % 10000 == 0:
+            print(f'Games read: {total_records}')
 
         with open(path, 'a') as f:
             np.savetxt(f, data, delimiter=',', fmt='%s')
