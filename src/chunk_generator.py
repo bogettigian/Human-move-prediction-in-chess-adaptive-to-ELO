@@ -35,9 +35,11 @@ if __name__ == "__main__":
 
     os.chdir(work_dir)
 
-    for file in os.listdir(chunk_train_path + '/supervised-0'):
-        os.rename(chunk_train_path + '/supervised-0/' + file, chunk_train_path + '/' + file)
-    os.rmdir(chunk_train_path + '/supervised-0')
+    for folder in os.listdir(chunk_train_path):
+        if os.path.isdir(chunk_train_path + '/' + folder):
+            for file in os.listdir(chunk_train_path + '/' + folder):
+                os.rename(chunk_train_path + '/' + folder + '/' + file, chunk_train_path + '/' + file)
+            os.rmdir(chunk_train_path + '/' + folder)
 
     files_to_move = int(len(os.listdir(chunk_train_path)) * test_size)
     for file in os.listdir(chunk_train_path)[:files_to_move]:
