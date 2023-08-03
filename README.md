@@ -61,7 +61,7 @@ cd ../../
 In order to build lc0, on Ubuntu, run the following command:
 ```
 cd libs/trainingdata-tool/lc0/
-sh build.sh
+CC=gcc-10 CXX=g++-10 ./build.sh
 cd ../../../
 ```
 For Windows, follow the instructions from cmd:
