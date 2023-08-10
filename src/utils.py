@@ -5,17 +5,27 @@ CHECKMATE_VAL = 999999
 
 
 def valid_game(game: chess.pgn.Game):
-    if game.headers.get('BlackElo') is None:
+    if game.headers.get('BlackElo') is None or game.headers.get('WhiteElo') is None:
         return False
-    if game.headers.get('WhiteElo') is None:
+    if game.headers.get('WhiteTitle') is None and game.headers.get('WhiteTitle') == 'BOT':
+        return False
+    if game.headers.get('BlackTitle') is None and game.headers.get('BlackTitle') == 'BOT':
         return False
     for node in game.mainline():
         if node.eval() is None:
             return False
         if node.clock() is None:
             return False
-        return True
-    return False
+        break
+    for node in game.mainline().__reversed__():
+        if node.next() is None:
+            continue
+        if node.eval() is None:
+            return False
+        if node.clock() is None:
+            return False
+        break
+    return True
 
 
 def game_to_dict(game: chess.pgn.Game):

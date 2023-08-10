@@ -91,7 +91,7 @@ cd ./../../../
 
 ## How to Run model
 ```
-./libs/trainingdata-tool/lc0/build/lc0 --weights=./data/model/mymodel.pb.gz
+./libs/trainingdata-tool/lc0/build/lc0 --weights=./data/model/mymodel.pb.gz --elo=1000
 ```
 
 ## References
