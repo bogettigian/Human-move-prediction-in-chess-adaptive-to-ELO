@@ -11,12 +11,6 @@ def valid_game(game: chess.pgn.Game):
         return False
     if game.headers.get('BlackTitle') is None and game.headers.get('BlackTitle') == 'BOT':
         return False
-    for node in game.mainline():
-        if node.eval() is None:
-            return False
-        if node.clock() is None:
-            return False
-        break
     for node in game.mainline().__reversed__():
         if node.next() is None:
             continue
