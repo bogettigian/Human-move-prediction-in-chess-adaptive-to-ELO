@@ -136,3 +136,6 @@ data/
 
 # Logs
 out.pgn
+
+# Notebooks
+notebooks/

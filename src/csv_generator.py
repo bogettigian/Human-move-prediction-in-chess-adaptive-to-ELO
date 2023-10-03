@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import time
+import chess.engine
 import numpy as np
 
 import database
@@ -13,9 +14,14 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--connection_string', default='mongodb://localhost:27017', help="Connection string")
     parser.add_argument('-d', '--database', default='chess-mongo', help="Database name")
     parser.add_argument('-t', '--collection', default='moves', help="Collection name")
-    parser.add_argument('-p', '--path', default='./../data/csv/data.csv', help="Data output")
+    parser.add_argument('-p', '--path', default='./../data/validation/data.csv', help="Data output")
 
-    parser.add_argument('-f', '--filter', default="{}", type=json.loads, help="Database query filter")
+    parser.add_argument('-e', '--engine', default='./../libs/trainingdata-tool/lc0/build/lc0', help="Engine")
+    parser.add_argument('-w', '--weights', default='./../data/model/mymodel.pb.gz', help="Engine weights")
+    parser.add_argument('-q', '--static_elo', default=True, type=bool, help="Static elo")
+    parser.add_argument('-o', '--elo', default='1000', help="Engine elo")
+
+    parser.add_argument('-f', '--filter', default='{}', type=json.loads, help="Database query filter")
     parser.add_argument('-s', '--skip', default=0, type=int, help="Database query skip")
     parser.add_argument('-l', '--limit', default=0, type=int, help="Database query limit")
     args = vars(parser.parse_args())
@@ -24,6 +30,11 @@ if __name__ == "__main__":
     database_name = args['database']
     collection_name = args['collection']
     path = args['path']
+
+    engine = args['engine']
+    weights = args['weights']
+    static_elo = args['static_elo']
+    elo = args['elo']
 
     db_filter = args['filter']
     db_skip = args['skip']
@@ -36,21 +47,59 @@ if __name__ == "__main__":
     total_records = 0
     saved_records = 0
 
-    filter = {}
     collection = database.get_database(connection_string, database_name, collection_name)
     with open(path, 'w') as f:
-        np.savetxt(f, utils.columns(), delimiter=',', fmt='%s')
+        np.savetxt(f, [
+            ['fen', 'white_elo', 'black_elo', 'real', 'predicted', 'turn', 'time', 'total_time', 'is_end']],
+                   delimiter=',', fmt='%s')
+
+    if static_elo:
+        engine = chess.engine.SimpleEngine.popen_uci([engine, f'--weights={weights}', f'--elo={elo}'])
 
     for game_dict in collection.find(db_filter).sort('$natural', 1).skip(db_skip).limit(db_limit):
-        data, records = utils.game_dict_to_array(game_dict)
-        total_records += 1
-        saved_records += records
-        if total_records % 10000 == 0:
-            print(f'Games read: {total_records}')
+        game = utils.dict_to_game(game_dict)
+        board_game = game.board()
+
+        if not static_elo:
+            withe_engine = chess.engine.SimpleEngine.popen_uci(
+                [engine, f'--weights={weights}', f'--elo={game.headers.get("WhiteElo")}'])
+            black_engine = chess.engine.SimpleEngine.popen_uci(
+                [engine, f'--weights={weights}', f'--elo={game.headers.get("BlackElo")}'])
+
+        records = []
+        for node in game.mainline():
+            if static_elo:
+                result = engine.play(board_game, chess.engine.Limit(depth=1))
+            elif not static_elo and board_game.turn == chess.WHITE:
+                result = withe_engine.play(board_game, chess.engine.Limit(depth=1))
+            else:
+                result = black_engine.play(board_game, chess.engine.Limit(depth=1))
+
+            records.append([
+                board_game.fen(),
+                game.headers.get("WhiteElo"),
+                game.headers.get("BlackElo"),
+                node.move,
+                result.move,
+                node.turn(),
+                node.clock(),
+                game.headers.get("TimeControl"),
+                node.is_end()
+            ])
+            board_game.push(node.move)
+            saved_records += 1
+
+        if not static_elo:
+            withe_engine.quit()
+            black_engine.quit()
 
         with open(path, 'a') as f:
-            np.savetxt(f, data, delimiter=',', fmt='%s')
+            np.savetxt(f, records, delimiter=',', fmt='%s')
+        total_records += 1
+
+    if static_elo:
+        engine.quit()
 
     print(f'Total games read: {total_records}')
-    print(f'Total games saved: {saved_records}')
+    print(f'Total moves saved: {saved_records}')
     print(f'Time taken in seconds: {time.time() - start_time}')
