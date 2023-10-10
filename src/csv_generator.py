@@ -84,6 +84,7 @@ if __name__ == "__main__":
                 node.turn(),
                 node.clock(),
                 game.headers.get("TimeControl"),
+                node.eval(),
                 node.is_end()
             ])
             board_game.push(node.move)
