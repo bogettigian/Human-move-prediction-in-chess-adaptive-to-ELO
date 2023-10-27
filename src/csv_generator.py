@@ -50,7 +50,7 @@ if __name__ == "__main__":
     collection = database.get_database(connection_string, database_name, collection_name)
     with open(path, 'w') as f:
         np.savetxt(f, [
-            ['fen', 'white_elo', 'black_elo', 'real', 'predicted', 'turn', 'time', 'total_time', 'is_end']],
+            ['fen', 'white_elo', 'black_elo', 'real', 'predicted', 'turn', 'time', 'total_time', 'eval', 'is_end']],
                    delimiter=',', fmt='%s')
 
     if static_elo:
@@ -84,7 +84,7 @@ if __name__ == "__main__":
                 node.turn(),
                 node.clock(),
                 game.headers.get("TimeControl"),
-                node.eval(),
+                node.eval().pov(node.turn()).score(),
                 node.is_end()
             ])
             board_game.push(node.move)
