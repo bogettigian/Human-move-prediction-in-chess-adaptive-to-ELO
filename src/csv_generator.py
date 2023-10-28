@@ -75,6 +75,12 @@ if __name__ == "__main__":
             else:
                 result = black_engine.play(board_game, chess.engine.Limit(depth=1))
 
+            eval_escore = '#'
+            if node.eval() is not None and node.eval().is_mate():
+                eval_escore = f'#{node.eval().pov(node.turn()).mate()}'
+            elif node.eval() is not None and not node.eval().is_mate():
+                eval_escore = f'{node.eval().pov(node.turn()).score()}'
+
             records.append([
                 board_game.fen(),
                 game.headers.get("WhiteElo"),
@@ -84,7 +90,7 @@ if __name__ == "__main__":
                 node.turn(),
                 node.clock(),
                 game.headers.get("TimeControl"),
-                node.eval().pov(node.turn()).score(),
+                eval_escore,
                 node.is_end()
             ])
             board_game.push(node.move)
