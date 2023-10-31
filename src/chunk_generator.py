@@ -5,7 +5,7 @@ import time
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Chess Chunk generator script.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-p', '--pgn_path', default='./../data/pgn/data.pgn', help="Data output")
+    parser.add_argument('-p', '--pgn_path', default='./../data/pgn/data.pgn', help="Data input")
     parser.add_argument('-c', '--chunk_path', default='./../data/chunk', help="Data output")
     parser.add_argument('-t', '--test_size', default=0.20, help="Data output")
     args = vars(parser.parse_args())
