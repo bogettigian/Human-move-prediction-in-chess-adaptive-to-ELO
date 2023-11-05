@@ -31,7 +31,7 @@ if __name__ == "__main__":
     collection_name = args['collection']
     path = args['path']
 
-    engine = args['engine']
+    engine_path = args['engine']
     weights = args['weights']
     static_elo = args['static_elo']
     elo = args['elo']
@@ -43,6 +43,7 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
 
+    num_retry = 5
     start_time = time.time()
     total_records = 0
     saved_records = 0
@@ -54,7 +55,7 @@ if __name__ == "__main__":
                    delimiter=',', fmt='%s')
 
     if static_elo:
-        engine = chess.engine.SimpleEngine.popen_uci([engine, f'--weights={weights}', f'--elo={elo}'])
+        engine = chess.engine.SimpleEngine.popen_uci([engine_path, f'--weights={weights}', f'--elo={elo}'])
 
     for game_dict in collection.find(db_filter).sort('$natural', 1).skip(db_skip).limit(db_limit):
         game = utils.dict_to_game(game_dict)
@@ -62,18 +63,37 @@ if __name__ == "__main__":
 
         if not static_elo:
             withe_engine = chess.engine.SimpleEngine.popen_uci(
-                [engine, f'--weights={weights}', f'--elo={game.headers.get("WhiteElo")}'])
+                [engine_path, f'--weights={weights}', f'--elo={game.headers.get("WhiteElo")}'])
             black_engine = chess.engine.SimpleEngine.popen_uci(
-                [engine, f'--weights={weights}', f'--elo={game.headers.get("BlackElo")}'])
+                [engine_path, f'--weights={weights}', f'--elo={game.headers.get("BlackElo")}'])
 
         records = []
         for node in game.mainline():
-            if static_elo:
-                result = engine.play(board_game, chess.engine.Limit(depth=1))
-            elif not static_elo and board_game.turn == chess.WHITE:
-                result = withe_engine.play(board_game, chess.engine.Limit(depth=1))
-            else:
-                result = black_engine.play(board_game, chess.engine.Limit(depth=1))
+            for i in range(num_retry):
+                if static_elo:
+                    try:
+                        result = engine.play(board_game, chess.engine.Limit(depth=1))
+                        break
+                    except Exception as ex:
+                        engine = chess.engine.SimpleEngine.popen_uci(
+                            [engine_path, f'--weights={weights}', f'--elo={elo}'])
+                elif not static_elo and board_game.turn == chess.WHITE:
+                    try:
+                        result = withe_engine.play(board_game, chess.engine.Limit(depth=1))
+                        break
+                    except Exception as ex:
+                        withe_engine = chess.engine.SimpleEngine.popen_uci(
+                            [engine_path, f'--weights={weights}', f'--elo={game.headers.get("WhiteElo")}'])
+                else:
+                    try:
+                        result = black_engine.play(board_game, chess.engine.Limit(depth=1))
+                        break
+                    except Exception as ex:
+                        black_engine = chess.engine.SimpleEngine.popen_uci(
+                            [engine_path, f'--weights={weights}', f'--elo={game.headers.get("BlackElo")}'])
+
+            if result is None:
+                raise ex
 
             eval_escore = '#'
             if node.eval() is not None and node.eval().is_mate():
