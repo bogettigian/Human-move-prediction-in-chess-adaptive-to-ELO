@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-e', '--engine', default='./../libs/trainingdata-tool/lc0/build/lc0', help="Engine")
     parser.add_argument('-w', '--weights', default='./../data/model/mymodel.pb.gz', help="Engine weights")
-    parser.add_argument('-q', '--static_elo', default=True, type=bool, help="Static elo")
+    parser.add_argument('-q', '--static_elo', default=False, type=bool, help="Static elo")
     parser.add_argument('-o', '--elo', default='1000', help="Engine elo")
 
     parser.add_argument('-f', '--filter', default='{}', type=json.loads, help="Database query filter")
