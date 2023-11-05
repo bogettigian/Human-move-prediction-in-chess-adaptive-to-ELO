@@ -57,7 +57,8 @@ if __name__ == "__main__":
     if static_elo:
         engine = chess.engine.SimpleEngine.popen_uci([engine_path, f'--weights={weights}', f'--elo={elo}'])
 
-    for game_dict in collection.find(db_filter).sort('$natural', 1).skip(db_skip).limit(db_limit):
+    cursor = collection.find(db_filter, no_cursor_timeout=True).sort('$natural', 1).skip(db_skip).limit(db_limit)
+    for game_dict in cursor:
         game = utils.dict_to_game(game_dict)
         board_game = game.board()
 
@@ -123,6 +124,7 @@ if __name__ == "__main__":
         with open(path, 'a') as f:
             np.savetxt(f, records, delimiter=',', fmt='%s')
         total_records += 1
+    cursor.close()
 
     if static_elo:
         engine.quit()
