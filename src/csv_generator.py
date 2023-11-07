@@ -57,8 +57,8 @@ if __name__ == "__main__":
     if static_elo:
         engine = chess.engine.SimpleEngine.popen_uci([engine_path, f'--weights={weights}', f'--elo={elo}'])
 
-    cursor = collection.find(db_filter, no_cursor_timeout=True).sort('$natural', 1).skip(db_skip).limit(db_limit)
-    for game_dict in cursor:
+    games = list(collection.find(db_filter, no_cursor_timeout=True).sort('$natural', 1).skip(db_skip).limit(db_limit))
+    for game_dict in games:
         game = utils.dict_to_game(game_dict)
         board_game = game.board()
 
@@ -76,6 +76,7 @@ if __name__ == "__main__":
                         result = engine.play(board_game, chess.engine.Limit(depth=1))
                         break
                     except Exception as ex:
+                        print(f'Engine error. Retry: {i}')
                         engine = chess.engine.SimpleEngine.popen_uci(
                             [engine_path, f'--weights={weights}', f'--elo={elo}'])
                 elif not static_elo and board_game.turn == chess.WHITE:
@@ -83,6 +84,7 @@ if __name__ == "__main__":
                         result = withe_engine.play(board_game, chess.engine.Limit(depth=1))
                         break
                     except Exception as ex:
+                        print(f'Engine error. Retry: {i}')
                         withe_engine = chess.engine.SimpleEngine.popen_uci(
                             [engine_path, f'--weights={weights}', f'--elo={game.headers.get("WhiteElo")}'])
                 else:
@@ -90,6 +92,7 @@ if __name__ == "__main__":
                         result = black_engine.play(board_game, chess.engine.Limit(depth=1))
                         break
                     except Exception as ex:
+                        print(f'Engine error. Retry: {i}')
                         black_engine = chess.engine.SimpleEngine.popen_uci(
                             [engine_path, f'--weights={weights}', f'--elo={game.headers.get("BlackElo")}'])
 
@@ -124,7 +127,6 @@ if __name__ == "__main__":
         with open(path, 'a') as f:
             np.savetxt(f, records, delimiter=',', fmt='%s')
         total_records += 1
-    cursor.close()
 
     if static_elo:
         engine.quit()
