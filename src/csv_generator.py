@@ -57,7 +57,7 @@ if __name__ == "__main__":
     if static_elo:
         engine = chess.engine.SimpleEngine.popen_uci([engine_path, f'--weights={weights}', f'--elo={elo}'])
 
-    games = list(collection.find(db_filter, no_cursor_timeout=True).sort('$natural', 1).skip(db_skip).limit(db_limit))
+    games = list(collection.find(db_filter).sort('$natural', 1).skip(db_skip).limit(db_limit))
     for game_dict in games:
         game = utils.dict_to_game(game_dict)
         board_game = game.board()
