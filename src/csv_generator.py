@@ -18,6 +18,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-e', '--engine', default='./../libs/trainingdata-tool/lc0/build/lc0', help="Engine")
     parser.add_argument('-w', '--weights', default='./../data/model/mymodel.pb.gz', help="Engine weights")
+    parser.add_argument('-n', '--no_elo', default=False, type=bool, help="No elo")
     parser.add_argument('-q', '--static_elo', default=False, type=bool, help="Static elo")
     parser.add_argument('-o', '--elo', default='1000', help="Engine elo")
 
@@ -33,6 +34,7 @@ if __name__ == "__main__":
 
     engine_path = args['engine']
     weights = args['weights']
+    no_elo = args['no_elo']
     static_elo = args['static_elo']
     elo = args['elo']
 
@@ -54,7 +56,9 @@ if __name__ == "__main__":
             ['fen', 'white_elo', 'black_elo', 'real', 'predicted', 'turn', 'time', 'total_time', 'eval', 'is_end']],
                    delimiter=',', fmt='%s')
 
-    if static_elo:
+    if no_elo:
+        engine = chess.engine.SimpleEngine.popen_uci([engine_path, f'--weights={weights}'])
+    if static_elo and not no_elo:
         engine = chess.engine.SimpleEngine.popen_uci([engine_path, f'--weights={weights}', f'--elo={elo}'])
 
     games = list(collection.find(db_filter).sort('$natural', 1).skip(db_skip).limit(db_limit))
@@ -62,7 +66,7 @@ if __name__ == "__main__":
         game = utils.dict_to_game(game_dict)
         board_game = game.board()
 
-        if not static_elo:
+        if not static_elo and not no_elo:
             withe_engine = chess.engine.SimpleEngine.popen_uci(
                 [engine_path, f'--weights={weights}', f'--elo={game.headers.get("WhiteElo")}'])
             black_engine = chess.engine.SimpleEngine.popen_uci(
