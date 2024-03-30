@@ -83,7 +83,7 @@ if __name__ == "__main__":
                         print(f'Engine error. Retry: {i}')
                         engine = chess.engine.SimpleEngine.popen_uci(
                             [engine_path, f'--weights={weights}', f'--elo={elo}'])
-                elif not static_elo and board_game.turn == chess.WHITE:
+                elif not static_elo and not no_elo and board_game.turn == chess.WHITE:
                     try:
                         result = withe_engine.play(board_game, chess.engine.Limit(depth=1))
                         break
@@ -124,7 +124,7 @@ if __name__ == "__main__":
             board_game.push(node.move)
             saved_records += 1
 
-        if not static_elo:
+        if not static_elo and not no_elo:
             withe_engine.quit()
             black_engine.quit()
 
