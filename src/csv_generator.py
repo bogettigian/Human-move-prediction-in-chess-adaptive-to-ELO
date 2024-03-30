@@ -75,7 +75,7 @@ if __name__ == "__main__":
         records = []
         for node in game.mainline():
             for i in range(num_retry):
-                if static_elo:
+                if static_elo or no_elo:
                     try:
                         result = engine.play(board_game, chess.engine.Limit(depth=1))
                         break
