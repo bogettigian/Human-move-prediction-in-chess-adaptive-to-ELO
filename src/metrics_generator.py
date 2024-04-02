@@ -34,7 +34,7 @@ if __name__ == "__main__":
     files = []
 
     for file_name in names:
-        files.append(f'results_{args["validation_path"]}{file_name}.csv')
+        files.append(f'{args["validation_path"]}results_{file_name}.csv')
 
     for i in range(len(files)):
         df = pd.read_csv(files[i])
