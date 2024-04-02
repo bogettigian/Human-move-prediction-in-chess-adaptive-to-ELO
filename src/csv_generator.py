@@ -135,7 +135,7 @@ if __name__ == "__main__":
             np.savetxt(f, records, delimiter=',', fmt='%s')
         total_records += 1
 
-    if static_elo:
+    if static_elo or no_elo:
         engine.quit()
 
     print(f'Total games read: {total_records}')
