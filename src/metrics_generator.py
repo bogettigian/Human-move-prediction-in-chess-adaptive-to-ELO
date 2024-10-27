@@ -16,8 +16,8 @@ def split_in_matches(data):
 
 
 def move_play_time(data, time):
-    for index in data.index:
-        if data.iloc[index]['time'] < time:
+    for index, row in data.iterrows():
+        if row['time'] < time:
             return index
     return index
 
