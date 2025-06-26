@@ -52,13 +52,13 @@ if __name__ == "__main__":
             if new_df is None:
                 new_df = game[10:end+1]
             else:
-                new_df = new_df.append(game[10:end+1])
+                new_df = pd.concat([new_df, game[10:end+1]])
 
-        new_df['real_elo'] = new_df['white_elo'] if not new_df['turn'] else new_df['black_elo']
-        elos = []
-        for e in list(new_df['real_elo']):
-            elos.append((e // 10) * 10)
-        new_df['fixed_elo'] = elos
+        fixed_elos = []
+        for index, row in new_df.iterrows():
+            e = row['white_elo'] if not row['turn'] else row['black_elo']
+            fixed_elos.append((e // 10) * 10)
+        new_df['fixed_elo'] = fixed_elos
 
         for e in list(new_df['fixed_elo'].unique()):
             filtered_df = new_df[new_df['fixed_elo'] == e]
