@@ -1,4 +1,4 @@
-# Aligning Superhuman AI with Human Behavior
+# Human move prediction in chess adaptive to ELO
 
 ## How to start
 
